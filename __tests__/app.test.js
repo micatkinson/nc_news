@@ -29,11 +29,9 @@ describe('/api/topics', ()    =>  {
                 expect(typeof topic.slug).toBe('string');
                 expect(typeof topic.description).toBe('string')
             });
+          });
         });
-    });
+    }); 
 });
 
 
-
-
-})
