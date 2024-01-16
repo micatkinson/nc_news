@@ -96,11 +96,10 @@ describe("/api/articles/:article_id", () => {
             .get("/api/articles/500")
             .expect(404)
             .then((response) => {
-                console.log(response)
                 expect(response.body.msg).toBe("article_id does not exist");
             });  
         });
-        it.only('400: should respond with appropirate message when endpoint is invalid input',  ()   =>  {
+        it('400: should respond with appropirate message when endpoint is invalid input',  ()   =>  {
             return request(app)
             .get("/api/articles/five")
             .expect(400)
