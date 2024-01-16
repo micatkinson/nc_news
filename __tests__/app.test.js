@@ -66,3 +66,33 @@ describe('/api', ()    =>  {
         });
     }); 
 });
+
+describe("/api/articles/:article_id", () => {
+    describe('GET', ()  => {
+        it('Status code 200', ()   => {
+            return request(app).get("/api/articles/2").expect(200);
+        });
+        it.only('should respond with an article object containing the appropriate properties corresponding with article_id', ()   => {
+            return request(app)
+            .get("/api/articles/3")
+            .expect(200)
+            .then((response) => {
+                const article = response.body.article;
+                expect(Object.keys(article).length).toBe(8);
+                expect(article).toMatchObject({
+                    author: 'icellusedkars',
+                    title: 'Eight pug gifs that remind me of mitch',
+                    article_id: 3,
+                    body: 'some gifs',
+                    topic: 'mitch',
+                    votes: 0,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                });
+                const timestamp = new Date(article.created_at).getTime();
+                expect(timestamp).toBe(1604394720000);
+            });
+        });
+    });
+});
+
+
