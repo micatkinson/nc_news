@@ -1,7 +1,7 @@
 const express = require("express")
 const Port = 3000
 
-const { getTopics, getApi, getArticlesById, getArticles } = require("./controllers/topics.controllers");
+const { getTopics, getApi, getArticlesById, getArticles, getArticleComments } = require("./controllers/topics.controllers");
 
 const app = express();
 
@@ -14,6 +14,8 @@ app.get("/api", getApi);
 app.get("/api/articles/:article_id", getArticlesById)
 
 app.get("/api/articles", getArticles)
+
+app.get("/api/articles/:article_id/comments", getArticleComments)
 
 app.all('*', function(req , res) {
     throw new Error('Bad Request')
