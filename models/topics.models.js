@@ -14,16 +14,20 @@ function fetchApi(){
     })
 }
 
-function fetchArticleById(article_id){
+function fetchArticleById(article_id, next){
     const query = ` SELECT * FROM articles
                     WHERE articles.article_id = $1;`
    
     return db.query(query, [article_id])
         .then((result) => {
-            return result.rows[0];
+            if (result.rows.length === 0){
+                return Promise.reject({status: 404, msg: 'article_id does not exist'})
+            } else {
+                return result.rows[0];
+            }
         })
         .catch((err) => {
-            next(err)
+            return Promise.reject(err)
         });
 };
 
