@@ -19,7 +19,7 @@ app.all('*', function(req , res) {
 
 app.use((err, req, res, next) =>  {
     if (err.message === 'Bad Request'){
-        res.status(400).send({msg: 'Bad Request'})
+        res.status(404).send({msg: 'Not Found'})
     } else {
         next(err);
     };

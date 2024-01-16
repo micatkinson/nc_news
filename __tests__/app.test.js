@@ -36,6 +36,7 @@ describe('/api/topics', ()    =>  {
             const topics = body.topics;
             expect(Array.isArray(topics)).toBe(true)
             topics.forEach((topic) => {
+                expect(Object.keys(topic).length).toBe(2);
                 expect(typeof topic.slug).toBe('string');
                 expect(typeof topic.description).toBe('string')
             });
@@ -46,10 +47,7 @@ describe('/api/topics', ()    =>  {
 
 describe('/api', ()    =>  {
     describe('GET', ()   =>   {
-        it('Status code 200', () =>  {
-            return request(app).get("/api").expect(200);
-        });
-        it('should respond with an accurate JSON object with avaliable endpoints', ()   => {
+        it('should respond with status 200 and an accurate JSON object with avaliable endpoints', ()   => {
             return request(app)
             .get("/api")
             .expect(200)
@@ -57,12 +55,12 @@ describe('/api', ()    =>  {
             expect(response.body.endpoint).toEqual(endPoint);
             });
         });
-        it('400: should respond with appropriate message when invalid url', ()  =>   {
+        it('404: should respond with appropriate message when invalid url', ()  =>   {
             return request(app)
             .get("/ap")
-            .expect(400)
+            .expect(404)
             .then((response) => {
-                expect(response.body.msg).toBe('Bad Request')
+                expect(response.body.msg).toBe('Not Found')
             });
         });
     }); 
