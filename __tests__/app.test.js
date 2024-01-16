@@ -139,7 +139,7 @@ describe("/api/articles", () => {
             })
         });
     });
-});
+
 
 describe("/api/articles/:article_id/comments", () => {
     describe('GET', ()  => {
@@ -193,6 +193,67 @@ describe("/api/articles/:article_id/comments", () => {
             });
         });
     });
+    describe('POST', ()  => {
+        it('should respond with 201 and add comment for specified article and respond with the posted comment', ()    => {
+            return request(app)
+            .post("/api/articles/7/comments")
+            .send({
+                   username: "lurker",
+                   body: "Hellllloooooo world!"
+                  })
+            .expect(201)
+            .then((response) => {
+                const comment = response.body.addedComment;
+                expect(Object.keys(comment).length).toBe(6);
+                expect(comment.comment_id).toBe(19)
+                expect(comment.author).toBe("lurker");
+                expect(comment.body).toBe("Hellllloooooo world!")
+                expect(comment.votes).toBe(0)
+                expect(comment.article_id).toBe(7)
+                expect(typeof comment.created_at).toBe('string')
+            });
+        });
+        it('status code 400 with appropriate message when key is missing from input body', ()    =>   {
+        return request(app)
+        .post("/api/articles/7/comments")
+        .send({
+                body: "bodyodyodyody"
+             })
+        .expect(400)
+        .then((response) =>  {
+                expect(response.body.msg).toBe('Bad request')
+            });
+        });
+        it('status code 404 when value attributed to foreign key constraint key is a foreign value', ()    =>   {
+        return request(app)
+        .post("/api/articles/7/comments")
+        .send({
+            username: "HP",
+            body: "Hellllloooooo world!"
+           })
+        .expect(404)
+        .then((response) =>  {
+            expect(response.body.msg).toBe('Recieved invalid value')
+        });
+    });
+    it('404: should respond with appropriate message when article_id is valid but outlying any stored ids', ()   =>  {
+        return request(app)
+        .get("/api/articles/500/comments")
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("article_id does not exist");
+        });  
+    });
+    it('400: should respond with appropirate message when parametric article_id is incorrect',  ()   =>  {
+        return request(app)
+        .get("/api/articles/five")
+        .expect(400)
+        .then((response) =>   {
+            expect(response.body.msg).toBe('Bad request')
+        });
+    });
 });
+})
+})
   
 
