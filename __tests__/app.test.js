@@ -36,6 +36,7 @@ describe('/api/topics', ()    =>  {
             const topics = body.topics;
             expect(Array.isArray(topics)).toBe(true)
             topics.forEach((topic) => {
+                expect(Object.keys(topic).length).toBe(2);
                 expect(typeof topic.slug).toBe('string');
                 expect(typeof topic.description).toBe('string')
             });
@@ -46,10 +47,7 @@ describe('/api/topics', ()    =>  {
 
 describe('/api', ()    =>  {
     describe('GET', ()   =>   {
-        it('Status code 200', () =>  {
-            return request(app).get("/api").expect(200);
-        });
-        it('should respond with an accurate JSON object with avaliable endpoints', ()   => {
+        it('should respond with status 200 and an accurate JSON object with avaliable endpoints', ()   => {
             return request(app)
             .get("/api")
             .expect(200)
@@ -57,12 +55,12 @@ describe('/api', ()    =>  {
             expect(response.body.endpoint).toEqual(endPoint);
             });
         });
-        it('400: should respond with appropriate message when invalid url', ()  =>   {
+        it('404: should respond with appropriate message when invalid url', ()  =>   {
             return request(app)
             .get("/ap")
-            .expect(400)
+            .expect(404)
             .then((response) => {
-                expect(response.body.msg).toBe('Bad Request')
+                expect(response.body.msg).toBe('Not Found')
             });
         });
     }); 
@@ -104,11 +102,42 @@ describe("/api/articles/:article_id", () => {
             .get("/api/articles/five")
             .expect(400)
             .then((response) =>   {
-                console.log(response)
+                expect(response.body.msg).toBe('Bad request')
             });
         });
     });
 });
 
-
+describe("/api/articles", () => {
+    describe('GET', ()  => {
+        it('should respond with an article array of articles object containing the appropriate properties and status code 200 when passed accurate endpoint', ()   => {
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then((response) => {
+                const { articles } = response.body;
+                expect(Array.isArray(articles)).toBe(true)
+                articles.forEach((article) => {
+                    expect(Object.keys(article).length).toBe(8);
+                    expect(typeof article.author).toBe('string');
+                    expect(typeof article.title).toBe('string');
+                    expect(typeof article.article_id).toBe('number');
+                    expect(typeof article.topic).toBe('string');
+                    expect(typeof article.created_at).toBe('string');
+                    expect(typeof article.votes).toBe('number');
+                    expect(typeof article.article_img_url).toBe('string');
+                    expect(typeof article.comment_count).toBe('string');
+                });
+            });
+        });
+        it('articles should be sorted by date in desc order', ()   => {
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then((response) => {
+                expect(response.body.articles).toBeSortedBy('created_at', {descending: true})
+            })
+        });
+    });
+});
 
