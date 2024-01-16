@@ -25,11 +25,9 @@ function fetchArticleById(article_id, next){
             } else {
                 return result.rows[0];
             }
-        })
-        .catch((err) => {
-            return Promise.reject(err)
-        });
+    });
 };
+
 
 function fetchArticles(){
     return db.query(`SELECT articles.author, title, articles.article_id, articles.topic, articles.created_at, articles.votes, article_img_url,
