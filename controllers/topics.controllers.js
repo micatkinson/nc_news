@@ -1,4 +1,5 @@
-const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments } = require("../models/topics.models")
+const { classMethod } = require("@babel/types");
+const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment } = require("../models/topics.models")
 const fs = require("fs/promises")
 
 
@@ -41,5 +42,15 @@ function getArticleComments(req, res, next){
     });
 }
 
+function postComment(req, res, next){
+    const {article_id} = req.params;
+    const comment = req.body;
+    addComment(article_id, comment).then((addedComment) =>  {
+        res.status(201).send({addedComment});
+    }).catch((err) =>  {
+        next(err);
+    });
+}
 
-module.exports = { getTopics, getApi, getArticlesById, getArticles, getArticleComments }
+
+module.exports = { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment }

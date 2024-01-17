@@ -56,5 +56,23 @@ function fetchArticleComments(article_id){
     });
 };
 
+function addComment(article_id, comment){
+    const query =  `INSERT INTO comments
+                   (article_id, author, body)
+                    VALUES
+                    ($1, $2, $3)
+                    RETURNING *`
 
-module.exports = { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments }
+    
+    return db.query(query, [article_id, comment.username, comment.body])
+    .then(result => {
+        if (result.rows.length === 0){
+            return Promise.reject({status: 404, msg: 'article_id does not exist'})
+        } else {
+        return result.rows[0]
+        };
+    });
+}
+
+
+module.exports = { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment }
