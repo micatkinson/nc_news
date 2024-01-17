@@ -204,14 +204,19 @@ describe("/api/articles/:article_id/comments", () => {
             .expect(201)
             .then((response) => {
                 const comment = response.body.addedComment;
+                const convertTime =  convertTimestampToDate(comment.created_at);
+                const date = (Object.values(convertTime).join(''))
+                const currentTime = new Date()
                 expect(Object.keys(comment).length).toBe(6);
-                expect(comment.comment_id).toBe(19)
-                expect(comment.author).toBe("lurker");
-                expect(comment.body).toBe("Hellllloooooo world!")
-                expect(comment.votes).toBe(0)
-                expect(comment.article_id).toBe(7)
-                expect(typeof comment.created_at).toBe('string')
-            });
+                expect(comment).toMatchObject({
+                    article_id: 7,
+                    author: "lurker",
+                    body: "Hellllloooooo world!",
+                    comment_id: 19,
+                    created_at: date,
+                    votes: 0  
+                });
+        });
         });
         it('status code 400 with appropriate message when key is missing from input body', ()    =>   {
         return request(app)
@@ -224,7 +229,7 @@ describe("/api/articles/:article_id/comments", () => {
                 expect(response.body.msg).toBe('Bad request')
             });
         });
-        it('status code 404 when value attributed to foreign key constraint key is a foreign value', ()    =>   {
+        it('status code 404 when invalid value inputted', ()    =>   {
         return request(app)
         .post("/api/articles/7/comments")
         .send({
@@ -255,5 +260,5 @@ describe("/api/articles/:article_id/comments", () => {
 });
 })
 })
-  
+
 
