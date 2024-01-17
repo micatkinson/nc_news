@@ -213,7 +213,6 @@ describe("/api/articles/:article_id", () => {
     });
  })
 
-
 describe("/api/articles", () => {
     describe('GET', ()  => {
         it('should respond with an article array of articles object containing the appropriate properties and status code 200 when passed accurate endpoint', ()   => {
