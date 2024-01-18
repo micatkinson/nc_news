@@ -1,4 +1,4 @@
-{
+{ 
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
@@ -111,6 +111,11 @@
         }
       ]
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the appropriate comment",
+    "queries": ["comment_id"],
+    "exampleResponse": "status_code 204"
   }
 }
 

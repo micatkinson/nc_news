@@ -1,7 +1,7 @@
 const express = require("express")
 const Port = 3000
 
-const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles } = require("./controllers/topics.controllers");
+const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment } = require("./controllers/topics.controllers");
 
 const app = express();
 
@@ -20,6 +20,8 @@ app.get("/api/articles/:article_id/comments", getArticleComments)
 app.post("/api/articles/:article_id/comments", postComment)
 
 app.patch("/api/articles/:article_id/", patchArticles)
+
+app.delete("/api/comments/:comment_id", deleteComment) 
 
 app.all('*', function(req , res) {
     res.status(404).send({msg: 'Not Found'})

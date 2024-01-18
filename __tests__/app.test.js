@@ -371,7 +371,7 @@ describe("/api/articles/:article_id/comments", () => {
             expect(response.body.msg).toBe("Recieved invalid value");
         });  
     });
-    it('400: should respond with appropirate message when parametric article_id is incorrect',  ()   =>  {
+    it('404: should respond with appropirate message when parametric article_id is incorrect',  ()   =>  {
         return request(app)
         .post("/api/articles/five")
         .send({
@@ -387,4 +387,33 @@ describe("/api/articles/:article_id/comments", () => {
 })
 })
 
+describe("/api/comments/:comment_id", ()   =>   {
+    describe('DELETE', ()   =>  {
+        it('204 status code and no content when successful',  ()   =>  {
+            return request(app)
+            .delete("/api/comments/3")
+            .expect(204)
+            .then((response) => {
+                expect(response.body).toEqual({});
+            });
+        });
+        it('404 status and comment_id not found msg when valid but non-existant comment_id inputted', ()   =>  {
+            return request(app)
+            .delete("/api/comments/100")
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe("comment_id not found")
+            })
+        })
+        it('400 status code if invalid comment_id inputted', ()  =>  {
+            return request(app)
+            .delete("/api/comments/six")
+            .expect(400)
+            .then((response) =>  {
+                expect(response.body.msg).toBe("Bad request")
+            })
+
+        })
+    });
+});
 
