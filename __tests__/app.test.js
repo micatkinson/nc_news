@@ -75,7 +75,6 @@ describe("/api/articles/:article_id", () => {
                 const article = response.body.article;
                 const convertTime =  convertTimestampToDate(article.created_at);
                 const date = (Object.values(convertTime).join(''))
-                expect(Object.keys(article).length).toBe(9);
                 expect(article).toMatchObject({
                     author: 'icellusedkars',
                     title: 'Eight pug gifs that remind me of mitch',
@@ -85,8 +84,17 @@ describe("/api/articles/:article_id", () => {
                     topic: 'mitch',
                     votes: 0,
                     article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-                    comment_count: '2'
                 });
+            });
+        });
+        it('should respond with an article object with additional comment_count variable', ()   => {
+            return request(app)
+            .get("/api/articles/5")
+            .expect(200)
+            .then((response) => {
+                const article = response.body.article;
+                expect(Object.keys(article).length).toBe(9);
+                expect(article.comment_count).toEqual('2')
             });
         });
         it('404: should respond with appropriate message when endpoint is valid but outlying current article_id', ()   =>  {
@@ -255,6 +263,14 @@ describe("/api/articles", () => {
                 articles.forEach((article) => {
                     expect(article.topic).toBe("mitch")
                 });
+            })
+        });
+        it('should respond with an empty array if known topic but topic has no articles', ()  => {
+            return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then((response) =>  {
+                expect(response.body.articles.length).toBe(0)
             })
         });
         it('should respond with all articles if endpoint ommitteed', ()  => {

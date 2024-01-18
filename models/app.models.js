@@ -38,6 +38,12 @@ function fetchArticleById(article_id){
 
 function fetchArticles(topic){
 
+    const validTopics = ['mitch', 'cats', 'paper'];
+
+    if(topic !== undefined && !validTopics.includes(topic)){
+        return Promise.reject({status: 404, msg: 'Topic does not exist'})
+    }
+
     let query =  `  SELECT articles.author, title, articles.article_id, articles.topic, articles.created_at, articles.votes, article_img_url,
                     COUNT(comments.article_id) AS comment_count 
                     FROM articles
@@ -58,9 +64,6 @@ function fetchArticles(topic){
                     
     return db.query(query, queryParams)
         .then((result) => {
-            if(result.rows.length === 0){
-                return Promise.reject({status: 404, msg: 'Topic does not exist'})
-            }
             return result.rows;
     });
 };
