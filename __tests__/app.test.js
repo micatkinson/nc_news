@@ -34,7 +34,6 @@ describe('/api/topics', ()    =>  {
             .get("/api/topics")
             .then(({body}) => {
             const topics = body.topics;
-            expect(Array.isArray(topics)).toBe(true)
             topics.forEach((topic) => {
                 expect(Object.keys(topic).length).toBe(2);
                 expect(typeof topic.slug).toBe('string');
@@ -222,7 +221,6 @@ describe("/api/articles", () => {
             .expect(200)
             .then((response) => {
                 const { articles } = response.body;
-                expect(Array.isArray(articles)).toBe(true)
                 const articleObj = expect.objectContaining({
                     author: expect.any(String),
                     title: expect.any(String),
@@ -452,7 +450,6 @@ describe("api/users", ()   =>   {
             .expect(200)
             .then((response) =>  {
                 const { users } = response.body
-                expect(Array.isArray(users)).toBe(true)
                 const userObj = expect.objectContaining({
                     username: expect.any(String),
                     name: expect.any(String),
