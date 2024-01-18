@@ -247,6 +247,33 @@ describe("/api/articles", () => {
                 expect(response.body.articles).toBeSortedBy('created_at', {descending: true})
             })
         });
+        it('should accept a topic query and filter the articles depending on topic value specified', ()  => {   
+            return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then((response) => {
+                const { articles } = response.body;
+                articles.forEach((article) => {
+                    expect(article.topic).toBe("mitch")
+                });
+            })
+        });
+        it('should respond with all articles if endpoint ommitteed', ()  => {
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then((response) =>  {
+                expect(response.body.articles.length).toBe(data.articleData.length)
+            })
+        });
+        it('404 not found when an unknown topic is selected', ()   => {
+            return request(app)
+            .get("/api/articles?topic=food")
+            .expect(404)
+            .then((response) =>  {
+                expect(response.body.msg).toBe('Topic does not exist')
+            });
+        });
     });
 
 

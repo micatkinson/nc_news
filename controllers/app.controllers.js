@@ -1,5 +1,4 @@
-const { classMethod } = require("@babel/types");
-const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers } = require("../models/topics.models")
+const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers } = require("../models/app.models")
 const fs = require("fs/promises")
 
 
@@ -26,7 +25,8 @@ function getArticlesById(req, res, next){
 }
 
 function getArticles(req, res, next){
-    fetchArticles().then((articles) => {
+    const topic = req.query.topic
+    fetchArticles(topic).then((articles) => {
         res.status(200).send({articles})
     }).catch((err) =>  {
         next(err)
