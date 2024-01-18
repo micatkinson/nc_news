@@ -75,16 +75,17 @@ describe("/api/articles/:article_id", () => {
                 const article = response.body.article;
                 const convertTime =  convertTimestampToDate(article.created_at);
                 const date = (Object.values(convertTime).join(''))
-                expect(Object.keys(article).length).toBe(8);
+                expect(Object.keys(article).length).toBe(9);
                 expect(article).toMatchObject({
                     author: 'icellusedkars',
                     title: 'Eight pug gifs that remind me of mitch',
                     article_id: 3,
                     body: 'some gifs',
-                    created_at: `${date}`,
+                    created_at: date,
                     topic: 'mitch',
                     votes: 0,
-                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+                    comment_count: '2'
                 });
             });
         });
