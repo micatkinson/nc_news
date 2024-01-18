@@ -118,6 +118,7 @@ describe("/api/articles/:article_id", () => {
                 const { updatedArticle } = response.body
                 const convertTime =  convertTimestampToDate(updatedArticle.created_at);
                 const date = (Object.values(convertTime).join(''))
+                expect(Object.keys(updatedArticle).length).toBe(8);
                 expect(updatedArticle).toMatchObject({
                     author: 'butter_bridge',
                     title: 'Living in the shadow of a great man',
