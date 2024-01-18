@@ -1,7 +1,7 @@
 const express = require("express")
 const Port = 3000
 
-const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment, getUsers } = require("./controllers/topics.controllers");
+const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment, getUsers } = require("./controllers/app.controllers");
 
 const app = express();
 

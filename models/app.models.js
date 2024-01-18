@@ -28,17 +28,32 @@ function fetchArticleById(article_id, next){
     });
 };
 
-function fetchArticles(){
-    return db.query(`SELECT articles.author, title, articles.article_id, articles.topic, articles.created_at, articles.votes, article_img_url,
+function fetchArticles(topic){
+
+    let query =  `  SELECT articles.author, title, articles.article_id, articles.topic, articles.created_at, articles.votes, article_img_url,
                     COUNT(comments.article_id) AS comment_count 
                     FROM articles
                     LEFT JOIN comments
                     ON articles.article_id = comments.article_id
-                    GROUP BY 
-                    articles.title, articles.article_id
-                    ORDER BY created_at DESC
-                    `).then(({rows}) => {
-                    return rows;
+                    `;
+    
+    const queryParams = []
+    if(topic){
+        query += " WHERE topic = $1";
+        queryParams.push(topic);
+    }
+
+    query += `  GROUP BY 
+                articles.title, articles.article_id
+                ORDER BY created_at DESC;`
+
+                    
+    return db.query(query, queryParams)
+        .then((result) => {
+            if(result.rows.length === 0){
+                return Promise.reject({status: 404, msg: 'Topic does not exist'})
+            }
+            return result.rows;
     });
 };
 
