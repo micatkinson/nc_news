@@ -90,5 +90,19 @@ function updateArticles(article_id, incVotes){
     })
 }
 
+function removeComment(comment_id){
+    const query = `DELETE FROM comments
+                    WHERE comment_id = $1
+                    RETURNING *
+                   `
 
-module.exports = { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles }
+    return db.query(query, [comment_id])
+    .then((result) =>  {
+        if (result.rows.length === 0){
+            return Promise.reject({status: 404, msg: 'comment_id not found'})
+        }
+    })
+};
+
+
+module.exports = { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment }
