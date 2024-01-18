@@ -2,6 +2,7 @@ const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComm
 const fs = require("fs/promises")
 
 
+
 function getTopics(req, res){
     fetchTopics().then((topics) => {
         res.status(200).send({topics});
@@ -28,7 +29,8 @@ function getArticles(req, res, next){
     const topic = req.query.topic
     fetchArticles(topic).then((articles) => {
         res.status(200).send({articles})
-    }).catch((err) =>  {
+    })
+    .catch((err) =>  {
         next(err)
     });
 }

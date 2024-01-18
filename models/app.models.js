@@ -1,5 +1,6 @@
 const db = require("../db/connection")
 const fs = require("fs/promises")
+const { checkValidTopic } = require("../db/seeds/utils")
 
 function fetchTopics(){
     return db.query('SELECT * FROM topics').then(({rows}) => {
@@ -36,13 +37,12 @@ function fetchArticleById(article_id){
     });
 };
 
+
+
 function fetchArticles(topic){
 
-    const validTopics = ['mitch', 'cats', 'paper'];
-
-    if(topic !== undefined && !validTopics.includes(topic)){
-        return Promise.reject({status: 404, msg: 'Topic does not exist'})
-    }
+    return checkValidTopic(topic)
+    .then(() => {
 
     let query =  `  SELECT articles.author, title, articles.article_id, articles.topic, articles.created_at, articles.votes, article_img_url,
                     COUNT(comments.article_id) AS comment_count 
@@ -60,12 +60,12 @@ function fetchArticles(topic){
     query += `  GROUP BY 
                 articles.title, articles.article_id
                 ORDER BY created_at DESC;`
-
-                    
+           
     return db.query(query, queryParams)
         .then((result) => {
             return result.rows;
     });
+    })
 };
 
 function fetchArticleComments(article_id){
