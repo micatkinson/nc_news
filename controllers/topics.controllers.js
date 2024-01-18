@@ -1,5 +1,5 @@
 const { classMethod } = require("@babel/types");
-const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment } = require("../models/topics.models")
+const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers } = require("../models/topics.models")
 const fs = require("fs/promises")
 
 
@@ -74,4 +74,10 @@ function deleteComment(req, res, next){
     })
 }
 
-module.exports = { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment }
+function getUsers(req, res, next){
+    fetchUsers().then((users) =>  {
+        res.status(200).send({users})
+    });
+}
+
+module.exports = { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment, getUsers }
