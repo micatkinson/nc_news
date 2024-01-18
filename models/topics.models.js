@@ -104,5 +104,11 @@ function removeComment(comment_id){
     })
 };
 
+function fetchUsers(){
+    return db.query('SELECT * FROM users').then(({rows}) => {
+        return rows;
+    });
+}
 
-module.exports = { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment }
+
+module.exports = { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers }

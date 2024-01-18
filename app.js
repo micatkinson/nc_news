@@ -1,7 +1,7 @@
 const express = require("express")
 const Port = 3000
 
-const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment } = require("./controllers/topics.controllers");
+const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment, getUsers } = require("./controllers/topics.controllers");
 
 const app = express();
 
@@ -16,6 +16,8 @@ app.get("/api/articles/:article_id", getArticlesById)
 app.get("/api/articles", getArticles)
 
 app.get("/api/articles/:article_id/comments", getArticleComments)
+
+app.get("/api/users", getUsers)
 
 app.post("/api/articles/:article_id/comments", postComment)
 

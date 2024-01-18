@@ -417,3 +417,28 @@ describe("/api/comments/:comment_id", ()   =>   {
     });
 });
 
+describe("api/users", ()   =>   {
+    describe('GET',  ()   =>  {
+        it('200 status code and array of user objects',  ()  =>  {
+            return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then((response) =>  {
+                const { users } = response.body
+                expect(Array.isArray(users)).toBe(true)
+                const userObj = expect.objectContaining({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+                users.forEach((user) => {
+                    expect(Object.keys(user).length).toBe(3)
+                    expect(user).toEqual(userObj)
+                });
+            });
+        });
+    });
+})
+
+
+
