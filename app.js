@@ -1,7 +1,7 @@
 const express = require("express")
 const Port = 3000
 
-const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment } = require("./controllers/topics.controllers");
+const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles } = require("./controllers/topics.controllers");
 
 const app = express();
 
@@ -19,17 +19,11 @@ app.get("/api/articles/:article_id/comments", getArticleComments)
 
 app.post("/api/articles/:article_id/comments", postComment)
 
-app.all('*', function(req , res) {
-    throw new Error('Bad Request')
-})
+app.patch("/api/articles/:article_id/", patchArticles)
 
-app.use((err, req, res, next) =>  {
-    if (err.message === 'Bad Request'){
-        res.status(404).send({msg: 'Not Found'})
-    } else {
-        next(err);
-    };
-});
+app.all('*', function(req , res) {
+    res.status(404).send({msg: 'Not Found'})
+})
 
 app.use((err, req, res, next) =>  {
     if (err.status === 404){
@@ -38,6 +32,7 @@ app.use((err, req, res, next) =>  {
         next(err);
     };
 });
+
 
 app.use((err, req, res, next) =>   {
     if (err.code === '22P02' || err.code === '23502'){

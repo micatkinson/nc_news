@@ -1,5 +1,5 @@
 const { classMethod } = require("@babel/types");
-const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment } = require("../models/topics.models")
+const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles } = require("../models/topics.models")
 const fs = require("fs/promises")
 
 
@@ -52,5 +52,17 @@ function postComment(req, res, next){
     });
 }
 
+function patchArticles(req, res, next){
+    const {article_id} = req.params;
+    let incVotes;
+    if(Object.keys(req.body).length === 1 && typeof req.body.inc_votes === 'number'){
+    incVotes = parseInt(req.body.inc_votes)
+    }
+    updateArticles(article_id, incVotes).then((updatedArticle) =>  {
+        res.status(200).send({updatedArticle})
+    }).catch((err) => {
+        next(err)
+    });
+}
 
-module.exports = { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment }
+module.exports = { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles }

@@ -106,7 +106,113 @@ describe("/api/articles/:article_id", () => {
             });
         });
     });
-});
+    describe('Patch', ()   => {
+        it('200 should update the selected article and return updated article when positive integer in body',   ()   =>  {
+            return request(app)
+            .patch("/api/articles/1")
+            .send({ 
+                inc_votes: 50
+            })
+            .expect(200)
+            .then((response) =>  {
+                const { updatedArticle } = response.body
+                const convertTime =  convertTimestampToDate(updatedArticle.created_at);
+                const date = (Object.values(convertTime).join(''))
+                expect(Object.keys(updatedArticle).length).toBe(8);
+                expect(updatedArticle).toMatchObject({
+                    author: 'butter_bridge',
+                    title: 'Living in the shadow of a great man',
+                    article_id: 1,
+                    body: 'I find this existence challenging',
+                    created_at: date,
+                    topic: 'mitch',
+                    votes: 150,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                })
+            })
+
+        });
+        it('200 should update the selected article and return updated article when negative integer in body',   ()   =>  {
+            return request(app)
+            .patch("/api/articles/1")
+            .send({ 
+                inc_votes: - 50
+            })
+            .expect(200)
+            .then((response) =>  {
+                const { updatedArticle } = response.body
+                const convertTime =  convertTimestampToDate(updatedArticle.created_at);
+                const date = (Object.values(convertTime).join(''))
+                expect(updatedArticle).toMatchObject({
+                    author: 'butter_bridge',
+                    title: 'Living in the shadow of a great man',
+                    article_id: 1,
+                    body: 'I find this existence challenging',
+                    created_at: date,
+                    topic: 'mitch',
+                    votes: 50,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                })
+            })
+        });
+        it('400: should respond if value given in incorrect format', ()  =>  {
+            return request(app)
+            .patch("/api/articles/4")
+            .send({ 
+                inc_votes: 'five'
+            })
+            .expect(400)
+            .then((response) =>  {
+                expect(response.body.msg).toBe('Bad request')
+            })
+        });
+        it('400: should respond if given incorrect key', ()   =>  {
+            return request(app)
+            .patch("/api/articles/4")
+            .send({
+                dec_votes: 1
+            })
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad request')
+            })
+        })
+        it('400: should respond if given additional keys', ()   =>  {
+            return request(app)
+            .patch("/api/articles/4")
+            .send({
+                inc_votes: 1,
+                comment: "updated info"
+            })
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad request')
+            })
+        });
+        it('404: should respond with appropriate message when endpoint is valid but outlying current article_id', ()   =>  {
+            return request(app)
+            .patch("/api/articles/500")
+            .send({ 
+                inc_votes: -50
+            })
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe("article_id does not exist");
+            });  
+        });
+        it('400: should respond with appropirate message when endpoint is invalid input',  ()   =>  {
+            return request(app)
+            .patch("/api/articles/five")
+            .send({ 
+                inc_votes: -50
+            })
+            .expect(400)
+            .then((response) =>   {
+                expect(response.body.msg).toBe('Bad request')
+            });
+        });
+    });
+ })
 
 describe("/api/articles", () => {
     describe('GET', ()  => {
@@ -117,18 +223,21 @@ describe("/api/articles", () => {
             .then((response) => {
                 const { articles } = response.body;
                 expect(Array.isArray(articles)).toBe(true)
+                const articleObj = expect.objectContaining({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(String)
+                })
                 articles.forEach((article) => {
-                    expect(Object.keys(article).length).toBe(8);
-                    expect(typeof article.author).toBe('string');
-                    expect(typeof article.title).toBe('string');
-                    expect(typeof article.article_id).toBe('number');
-                    expect(typeof article.topic).toBe('string');
-                    expect(typeof article.created_at).toBe('string');
-                    expect(typeof article.votes).toBe('number');
-                    expect(typeof article.article_img_url).toBe('string');
-                    expect(typeof article.comment_count).toBe('string');
+                    expect(Object.keys(article).length).toBe(8)
+                    expect(article).toEqual(articleObj)
                 });
-            });
+            })
         });
         it('articles should be sorted by date in desc order', ()   => {
             return request(app)
@@ -174,7 +283,16 @@ describe("/api/articles/:article_id/comments", () => {
             .expect(200)
             .then((response) => {
                 expect(response.body.articles).toBeSortedBy('created_at', {descending: true})
-            })
+            });
+        });
+        it('should return 200 status and empty array if valid article_id but no comments', ()   => {
+            return request(app)
+            .get("/api/articles/2/comments")
+            .expect(200)
+            .then((response) =>  {
+                const { comments } = response.body;
+                expect(comments).toMatchObject({})
+            });
         });
         it('404: should respond with appropriate message when article_id is valid but outlying any stored ids', ()   =>  {
             return request(app)
@@ -229,7 +347,7 @@ describe("/api/articles/:article_id/comments", () => {
                 expect(response.body.msg).toBe('Bad request')
             });
         });
-        it('status code 404 when invalid value inputted', ()    =>   {
+        it('status code 404 when username is not found in the users table', ()    =>   {
         return request(app)
         .post("/api/articles/7/comments")
         .send({
@@ -243,18 +361,26 @@ describe("/api/articles/:article_id/comments", () => {
     });
     it('404: should respond with appropriate message when article_id is valid but outlying any stored ids', ()   =>  {
         return request(app)
-        .get("/api/articles/500/comments")
+        .post("/api/articles/500/comments")
+        .send({
+            username: "lurker",
+            body: "Hellllloooooo world!"
+           })
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("article_id does not exist");
+            expect(response.body.msg).toBe("Recieved invalid value");
         });  
     });
     it('400: should respond with appropirate message when parametric article_id is incorrect',  ()   =>  {
         return request(app)
-        .get("/api/articles/five")
-        .expect(400)
+        .post("/api/articles/five")
+        .send({
+            username: "lurker",
+            body: "Hellllloooooo world!"
+           })
+        .expect(404)
         .then((response) =>   {
-            expect(response.body.msg).toBe('Bad request')
+            expect(response.body.msg).toBe('Not Found')
         });
     });
 });

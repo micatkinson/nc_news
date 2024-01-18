@@ -93,6 +93,24 @@
         }
       ]
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the votes an returns updated chosen article",
+    "queries": ["article_id"],
+    "exampleResponse": {
+      "updatedArticle": [
+        {
+          "author": "butter_bridge",
+          "title": "Living in the shadow of a great man",
+          "article_id" : 1,
+          "body": "I find this existence challenging",
+          "created_at": "date",
+          "topic": "mitch",
+          "votes": 150,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
+    }
   }
 }
 
