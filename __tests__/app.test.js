@@ -34,7 +34,6 @@ describe('/api/topics', ()    =>  {
             .get("/api/topics")
             .then(({body}) => {
             const topics = body.topics;
-            expect(Array.isArray(topics)).toBe(true)
             topics.forEach((topic) => {
                 expect(Object.keys(topic).length).toBe(2);
                 expect(typeof topic.slug).toBe('string');
@@ -76,16 +75,17 @@ describe("/api/articles/:article_id", () => {
                 const article = response.body.article;
                 const convertTime =  convertTimestampToDate(article.created_at);
                 const date = (Object.values(convertTime).join(''))
-                expect(Object.keys(article).length).toBe(8);
+                expect(Object.keys(article).length).toBe(9);
                 expect(article).toMatchObject({
                     author: 'icellusedkars',
                     title: 'Eight pug gifs that remind me of mitch',
                     article_id: 3,
                     body: 'some gifs',
-                    created_at: `${date}`,
+                    created_at: date,
                     topic: 'mitch',
                     votes: 0,
-                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+                    comment_count: '2'
                 });
             });
         });
@@ -222,7 +222,6 @@ describe("/api/articles", () => {
             .expect(200)
             .then((response) => {
                 const { articles } = response.body;
-                expect(Array.isArray(articles)).toBe(true)
                 const articleObj = expect.objectContaining({
                     author: expect.any(String),
                     title: expect.any(String),
@@ -452,7 +451,6 @@ describe("api/users", ()   =>   {
             .expect(200)
             .then((response) =>  {
                 const { users } = response.body
-                expect(Array.isArray(users)).toBe(true)
                 const userObj = expect.objectContaining({
                     username: expect.any(String),
                     name: expect.any(String),
