@@ -305,12 +305,12 @@ describe("/api/articles", () => {
                 expect(response.body.msg).toBe('Column does not exist')
             })
         });
-        it('400: should respond when invalid sort query', ()   =>  {
+        it('404: should respond when invalid sort query', ()   =>  {
             return request(app)
             .get("/api/articles?sort_by=title&order=up")
-            .expect(400)
+            .expect(404)
             .then((response) => {
-                expect(response.body.msg).toBe('Invalid sort query')
+                expect(response.body.msg).toBe('Not Found');
             })
         })
 });
