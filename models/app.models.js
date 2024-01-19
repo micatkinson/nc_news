@@ -2,20 +2,20 @@ const db = require("../db/connection")
 const fs = require("fs/promises")
 const { checkValidTopic, checkValidColumn } = require("../db/seeds/utils")
 
-function fetchTopics(){
+exports.fetchTopics = () => {
     return db.query('SELECT * FROM topics').then(({rows}) => {
         return rows;
     });
 };
 
-function fetchApi(){
+exports.fetchApi =() => {
     return fs.readFile("./endpoints.json", 'utf-8')
     .then((data) => {
         return JSON.parse(data)
     });
 };
 
-function fetchArticleById(article_id){
+exports.fetchArticleById = (article_id) => {
     const query = ` SELECT articles.*,
                     COUNT(comments.article_id) AS comment_count
                     FROM articles
@@ -37,9 +37,7 @@ function fetchArticleById(article_id){
     });
 };
 
-
-
-function fetchArticles(topic, sort_by = 'created_at', order = 'desc'){
+exports.fetchArticles = (topic, sort_by = 'created_at', order = 'desc') => {
 
     const validOrder = ['asc', 'desc']
 
@@ -76,7 +74,7 @@ function fetchArticles(topic, sort_by = 'created_at', order = 'desc'){
     })
 };
 
-function fetchArticleComments(article_id){
+exports.fetchArticleComments = (article_id) => {
     const query = `SELECT * FROM comments
                     WHERE article_id = $1
                     ORDER BY created_at DESC;`
@@ -95,7 +93,7 @@ function fetchArticleComments(article_id){
     });
 };
 
-function addComment(article_id, comment){
+exports.addComment = (article_id, comment) => {
     const query =  `INSERT INTO comments
                    (article_id, author, body)
                     VALUES
@@ -109,7 +107,7 @@ function addComment(article_id, comment){
         })
 }
 
-function updateArticles(article_id, incVotes){
+exports.updateArticles = (article_id, incVotes) => {
     const query = `UPDATE articles
                     SET votes = votes + $1
                     WHERE article_id = $2
@@ -124,7 +122,7 @@ function updateArticles(article_id, incVotes){
     })
 }
 
-function removeComment(comment_id){
+exports.removeComment = (comment_id) => {
     const query = `DELETE FROM comments
                     WHERE comment_id = $1
                     RETURNING *
@@ -138,11 +136,22 @@ function removeComment(comment_id){
     })
 };
 
-function fetchUsers(){
+exports.fetchUsers = () => {
     return db.query('SELECT * FROM users').then(({rows}) => {
         return rows;
     });
 }
 
+exports.fetchUsersByUsername = (username) => {
+   
+    return db.query(`SELECT * FROM users WHERE username = $1`, [username])
+    .then((result) => {
+        if (result.rows.length === 0){
+            return Promise.reject({status: 404, msg: 'Username does not exist'})
+        } else {
+             return result.rows[0];
+        }
+    });
+}
 
-module.exports = { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers }
+

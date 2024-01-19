@@ -1,21 +1,21 @@
-const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers } = require("../models/app.models")
+const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers, fetchUsersByUsername } = require("../models/app.models")
 const fs = require("fs/promises")
 
 
 
-function getTopics(req, res){
+exports.getTopics = (req, res) => {
     fetchTopics().then((topics) => {
         res.status(200).send({topics});
     });
 };
 
-function getApi(req, res){
+exports.getApi = (req, res) => {
     fetchApi().then((endPoint) => {
         res.status(200).send({endpoint: endPoint})
     })
 }
 
-function getArticlesById(req, res, next){
+exports.getArticlesById = (req, res, next) => {
     const {article_id} = req.params;
     fetchArticleById(article_id).then((article) =>  {
         res.status(200).send({article})
@@ -25,7 +25,7 @@ function getArticlesById(req, res, next){
     });
 }
 
-function getArticles(req, res, next){
+exports.getArticles = (req, res, next) => {
     const topic = req.query.topic;
     const sort_by = req.query.sort_by;
     const order = req.query.order;
@@ -38,7 +38,7 @@ function getArticles(req, res, next){
     });
 }
 
-function getArticleComments(req, res, next){
+exports.getArticleComments = (req, res, next) => {
     const {article_id} = req.params;
     fetchArticleComments(article_id).then((comments) => {
         res.status(200).send({comments})
@@ -47,7 +47,7 @@ function getArticleComments(req, res, next){
     });
 }
 
-function postComment(req, res, next){
+exports.postComment = (req, res, next) => {
     const {article_id} = req.params;
     const comment = req.body;
     addComment(article_id, comment).then((addedComment) =>  {
@@ -57,7 +57,7 @@ function postComment(req, res, next){
     });
 }
 
-function patchArticles(req, res, next){
+exports.patchArticles = (req, res, next) => {
     const {article_id} = req.params;
     let incVotes;
     if(Object.keys(req.body).length === 1 && typeof req.body.inc_votes === 'number'){
@@ -70,7 +70,7 @@ function patchArticles(req, res, next){
     });
 }
 
-function deleteComment(req, res, next){
+exports.deleteComment = (req, res, next) => {
     const { comment_id } = req.params;
     removeComment(comment_id).then(() =>  {
         res.status(204).end()
@@ -79,10 +79,19 @@ function deleteComment(req, res, next){
     })
 }
 
-function getUsers(req, res, next){
+exports.getUsers = (req, res, next) => {
     fetchUsers().then((users) =>  {
         res.status(200).send({users})
     });
 }
 
-module.exports = { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment, getUsers }
+exports.getUsersByUsername = (req, res, next) => {
+    const { username } = req.params;
+    fetchUsersByUsername(username).then((user) =>  {
+        res.status(200).send({user})
+    })
+    .catch((err) => {
+        next(err);
+    });
+}
+
