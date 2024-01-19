@@ -154,4 +154,19 @@ exports.fetchUsersByUsername = (username) => {
     });
 }
 
+exports.updateComments = (comment_id, incVotes) => {
+    const query = `UPDATE comments
+                    SET votes = votes + $1
+                    WHERE comment_id = $2
+                    RETURNING *`
+    
+    return db.query(query, [incVotes, comment_id])
+    .then((result) =>  {
+        if (result.rows.length === 0){
+            return Promise.reject({status: 404, msg: 'comment_id does not exist'})
+        }
+        return result.rows[0]
+    })
+}
+
 

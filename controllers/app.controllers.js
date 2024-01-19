@@ -1,7 +1,5 @@
-const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers, fetchUsersByUsername } = require("../models/app.models")
+const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchArticleComments, addComment, updateArticles, removeComment, fetchUsers, fetchUsersByUsername, updateComments } = require("../models/app.models")
 const fs = require("fs/promises")
-
-
 
 exports.getTopics = (req, res) => {
     fetchTopics().then((topics) => {
@@ -94,4 +92,19 @@ exports.getUsersByUsername = (req, res, next) => {
         next(err);
     });
 }
+
+exports.patchComment = (req, res, next) => {
+    const { comment_id } = req.params;
+    let incVotes;
+
+    if(Object.keys(req.body).length === 1 && typeof req.body.inc_votes === 'number'){
+    incVotes = parseInt(req.body.inc_votes)
+    }
+    updateComments(comment_id, incVotes).then((updatedComment) => {
+        res.status(200).send({updatedComment})
+    }).catch((err) => {
+        next(err);
+    })
+}
+
 

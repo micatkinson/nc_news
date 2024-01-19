@@ -481,7 +481,85 @@ describe("/api/comments/:comment_id", ()   =>   {
 
         })
     });
-});
+    describe('PATCH', ()  => {
+        it('200 should update the selected comment and return updated comment',   ()   =>  {
+            return request(app)
+            .patch("/api/comments/3")
+            .send({
+                 inc_votes : 50
+            })
+            .expect(200)
+            .then((response) =>  {
+                const { updatedComment } = response.body
+                const convertTime =  convertTimestampToDate(updatedComment.created_at);
+                const date = (Object.values(convertTime).join(''))
+                expect(updatedComment).toMatchObject({
+                    body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+                    votes: 150,
+                    author: "icellusedkars",
+                    article_id: 1,
+                    created_at: date,
+                });
+            });    
+        });
+        it('400: should respond if value given in incorrect format', ()  =>  {
+            return request(app)
+            .patch("/api/comments/2")
+            .send({ 
+                inc_votes: 'five'
+            })
+            .expect(400)
+            .then((response) =>  {
+                expect(response.body.msg).toBe('Bad request')
+            })
+        });
+        it('400: should respond if given incorrect key', ()   =>  {
+            return request(app)
+            .patch("/api/comments/2")
+            .send({
+                dec_votes: 100
+            })
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad request')
+            })
+        })
+        it('400: should respond if given additional keys', ()   =>  {
+            return request(app)
+            .patch("/api/comments/2")
+            .send({
+                inc_votes: 1,
+                lastName: "Gavin"
+            })
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad request')
+            })
+        });
+        it('404: should respond with appropriate message when endpoint is valid but outlying current article_id', ()   =>  {
+            return request(app)
+            .patch("/api/comments/2000")
+            .send({ 
+                inc_votes: -50
+            })
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe("comment_id does not exist");
+            });  
+        });
+        it('400: should respond with appropriate message when endpoint is invalid input',  ()   =>  {
+            return request(app)
+            .patch("/api/comments/ten")
+            .send({ 
+                inc_votes: -50
+            })
+            .expect(400)
+            .then((response) =>   {
+                expect(response.body.msg).toBe('Bad request')
+            });
+        });
+    });
+ })
 
 describe("api/users", ()   =>   {
     describe('GET',  ()   =>  {
