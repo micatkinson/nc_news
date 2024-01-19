@@ -32,7 +32,20 @@ exports.checkValidTopic = (topic) => {
        }
     });
   } else {
-    return Promise.resolve()
+     return Promise.resolve()
+  }
+}
+
+exports.checkValidColumn = (sort_by) => {
+  if (sort_by !== 'created_at'){
+    return db.query("SELECT * FROM information_schema.columns WHERE table_name = 'articles' and column_name = $1", [sort_by])
+    .then((result) => {
+      if (result.rows.length === 0){
+        return Promise.reject({status: 404, msg: 'Column does not exist'})
+      }
+    });
+  } else {
+     return Promise.resolve()
   }
 }
 

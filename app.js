@@ -3,6 +3,8 @@ const Port = 3000
 
 const { getTopics, getApi, getArticlesById, getArticles, getArticleComments, postComment, patchArticles, deleteComment, getUsers } = require("./controllers/app.controllers");
 
+const { handleCustomErrors, handleBadPsqlErrors, handleInvalidPsqlErrors } = require("./errors.index")
+
 const app = express();
 
 app.use(express.json());
@@ -29,28 +31,9 @@ app.all('*', function(req , res) {
     res.status(404).send({msg: 'Not Found'})
 })
 
-app.use((err, req, res, next) =>  {
-    if (err.status === 404){
-        res.status(404).send({msg: err.msg})
-    } else {
-        next(err);
-    };
-});
-
-
-app.use((err, req, res, next) =>   {
-    if (err.code === '22P02' || err.code === '23502'){
-        res.status(400).send({msg: 'Bad request'})
-    } else {
-        next(err);
-    };
-});
-
-app.use((err, req, res, next) =>  {
-    if (err.code === '23503'){
-            res.status(404).send({msg: 'Recieved invalid value'})
-    }
-})
+app.use(handleCustomErrors)
+app.use(handleBadPsqlErrors)
+app.use(handleInvalidPsqlErrors)
 
 
 module.exports = app;

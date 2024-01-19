@@ -289,7 +289,31 @@ describe("/api/articles", () => {
                 expect(response.body.msg).toBe('Topic does not exist')
             });
         });
-    });
+        it('200: should accept sort_by and order by queries', ()   => {
+            return request(app)
+            .get("/api/articles?sort_by=title&order=asc")
+            .expect(200)
+            .then((response) => {
+                expect(response.body.articles).toBeSortedBy('title', {descending: false})
+            })
+        });
+        it('404: should respond when column does not exist', ()   =>  {
+            return request(app)
+            .get("/api/articles?sort_by=speed")
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe('Column does not exist')
+            })
+        });
+        it('404: should respond when invalid sort query', ()   =>  {
+            return request(app)
+            .get("/api/articles?sort_by=title&order=up")
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe('Not Found');
+            })
+        })
+});
 
 
 describe("/api/articles/:article_id/comments", () => {

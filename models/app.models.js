@@ -1,6 +1,6 @@
 const db = require("../db/connection")
 const fs = require("fs/promises")
-const { checkValidTopic } = require("../db/seeds/utils")
+const { checkValidTopic, checkValidColumn } = require("../db/seeds/utils")
 
 function fetchTopics(){
     return db.query('SELECT * FROM topics').then(({rows}) => {
@@ -39,11 +39,16 @@ function fetchArticleById(article_id){
 
 
 
-function fetchArticles(topic){
+function fetchArticles(topic, sort_by = 'created_at', order = 'desc'){
+
+    const validOrder = ['asc', 'desc']
 
     return checkValidTopic(topic)
     .then(() => {
+        return checkValidColumn(sort_by)
+    }).then(() => {
 
+    if (validOrder.includes(order)){
     let query =  `  SELECT articles.author, title, articles.article_id, articles.topic, articles.created_at, articles.votes, article_img_url,
                     COUNT(comments.article_id) AS comment_count 
                     FROM articles
@@ -59,12 +64,15 @@ function fetchArticles(topic){
 
     query += `  GROUP BY 
                 articles.title, articles.article_id
-                ORDER BY created_at DESC;`
+                ORDER BY ${sort_by} ${order};`
            
     return db.query(query, queryParams)
         .then((result) => {
             return result.rows;
-    });
+    })
+    } else {
+             return Promise.reject()
+            }
     })
 };
 

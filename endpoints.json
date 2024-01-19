@@ -43,6 +43,23 @@
       ]
     }
   },
+  "GET /api/articles?sortby=column&order=asc/dec": {
+    "description": "sorts articles by column name and orders either ascending or descending",
+    "queries": ["column, order"],
+    "exampleResponse": {
+      "articles": [
+        {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "comment_count": 6
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves an array of individual article from specified article_id",
     "queries": ["article_id"],
