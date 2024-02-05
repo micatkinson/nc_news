@@ -1,9 +1,14 @@
 const express = require("express")
 const Port = 3000
+const cors = require('cors')
 
 const { handleCustomErrors, handleBadPsqlErrors, handleInvalidPsqlErrors } = require("./errors.index")
 
+
+
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
